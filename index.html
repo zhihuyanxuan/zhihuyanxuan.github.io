@@ -33,7 +33,25 @@
         bottom: 0.75rem;
         color: #212121;
         background-color: #e0e0e0;
+        text-align: center;
         z-index: 999;
+    }
+    .next{
+        width: 100%;
+        height: 1rem;
+        line-height: 1rem;
+        text-align: center;
+    }
+    .qq{
+        width: 100%;
+        position: fixed;
+        bottom: 0;
+        font-size: 10px;
+        text-align: center;
+        height: 10px;
+        line-height: 10px;
+        background-color: #e0e0e0;
+        color: #757575;
     }
     [v-cloak] { display: none; }
     </style>
@@ -64,11 +82,15 @@
             </div>
         </section>
 
+        <div class="next aui-text-info" v-if="!showContent && isSearch" @click="next()">查看下一页</div>
+
         <div v-if="showContent" class="content" v-html="content">
 
         </div>
 
         <div class="main" v-if="showContent" @click="showContent=false">返回</div>
+
+        <div class="qq">免责声明: 文章来源网络,版权归原作者所有。如有侵权,请联系删除。</div>
 
 
     </div>
@@ -77,22 +99,10 @@
 <script type="text/javascript" src="./script/vue.js" ></script>
 <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script type="text/javascript" src="./script/aui-toast.js" ></script>
-<script type="text/javascript" src="./script/aui-scroll.js"></script>
+
 <script type="text/javascript">
     var toast = new auiToast();
 
-    var scroll = new auiScroll({
-        listen:true,
-        distance:200
-    },function(ret){
-        if(ret.isToBottom && app.islist){
-            app.page++
-            app.getsearch()
-        }else{
-            console.log(ret.scrollTop)
-        }
-
-    });
 
     app = new Vue({
         el: '#app',
@@ -102,7 +112,7 @@
             name:'',
             page:0,
             showContent:false,
-            islist:false
+            isSearch:false
         },
         watch: {
 
@@ -168,25 +178,23 @@
                         "data": {name: app.name,page:app.page},
                         "type": "post"
                         , success: function (data, status, header) {
-                            //success body
                             toast.hide();
                             if(data.data.length==0){
                                 toast.custom({
                                     title:"没有数据了",
                                     duration:2000
                                 });
-                                app.islist = false
+                                app.isSearch = false
                                 return
                             }
                             if(app.page==0){
                                 app.items = data.data
-                                app.islist = true
+                                app.isSearch = true
                             }else{
                                 app.items = app.items.concat(data.data)
                             }
 
                         }, fail: function (header, status, errorThrown) {
-                            //fail body
                             console.log(header)
                             toast.fail({
                                 title:"网络错误，请稍后再试",
@@ -199,7 +207,6 @@
             },
             getInfo:function (it) {
                 console.log(it)
-                app.islist = false
                 app.showContent = true
                 this.content = it.content.replace(/\n/g,'<div class="line"></div>')
             },
