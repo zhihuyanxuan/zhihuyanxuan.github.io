@@ -189,6 +189,9 @@
                                 app.isSearch = false
                                 return
                             }
+                            if(data.data.length<10){
+                                app.isSearch = false
+                            }
                             if(app.page==0){
                                 app.items = data.data
                                 app.isSearch = true
