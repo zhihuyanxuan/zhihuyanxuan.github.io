@@ -38,9 +38,10 @@
     }
     .next{
         width: 100%;
-        height: 1rem;
-        line-height: 1rem;
+        height: 2rem;
+        line-height: 2rem;
         text-align: center;
+        padding-bottom: 3rem;
     }
     .qq{
         width: 100%;
@@ -61,7 +62,7 @@
         <div class="aui-searchbar" id="search" v-if="!showContent">
             <div class="aui-searchbar-input aui-border-radius">
                 <i class="aui-iconfont aui-icon-search"></i>
-                <input type="search" placeholder="请输入搜索内容(内容、作者、URL、ID等)" id="search-input">
+                <input type="search" placeholder="请输入搜索(内容、作者、URL、ID等)" id="search-input">
                 <div class="aui-searchbar-clear-btn">
                     <i class="aui-iconfont aui-icon-close"></i>
                 </div>
@@ -157,6 +158,7 @@
                 if(keywords.length){
                     searchBarInput.blur();
                     app.name = keywords
+                    app.page = 0
                     app.getsearch()
                     //document.getElementById("search-keywords").textContent = keywords;
                 }else{
