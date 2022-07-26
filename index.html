@@ -86,9 +86,11 @@
         distance:200 //判断到达底部的距离，isToBottom为true
     },function(ret){
         if(ret.isToBottom){
+            app.page++
+            app.getsearch()
             document.getElementById("demo").textContent = "已到达底部";
         }else{
-            document.getElementById("demo").textContent = "滚动高度："+ret.scrollTop;
+            console.log(ret.scrollTop)
         }
 
     });
@@ -98,6 +100,8 @@
         data: {
             items: [],
             content:"",
+            name:'',
+            page:0,
             showContent:false
         },
         watch: {
@@ -142,7 +146,8 @@
                 var keywords = searchBarInput.value;
                 if(keywords.length){
                     searchBarInput.blur();
-                    app.getsearch(keywords)
+                    app.name = keywords
+                    app.getsearch()
                     //document.getElementById("search-keywords").textContent = keywords;
                 }else{
                     this.style.marginRight = "-"+this.offsetWidth+"px";
@@ -152,7 +157,7 @@
             }
         },
         methods: {
-            getsearch: function (keywords) {
+            getsearch: function () {
                 toast.loading({
                     title:"加载中",
                     duration:2000
@@ -160,12 +165,24 @@
                     $.ajax({
                         "url": "https://a6103244925466-dev.apicloud-saas.com/api/yanxuans/getlist",
                         "cache": false,
-                        "data": {name: keywords,page:0},
+                        "data": {name: app.name,page:app.page},
                         "type": "post"
                         , success: function (data, status, header) {
                             //success body
                             toast.hide();
-                            app.items = data.data
+                            if(data.data.length==0){
+                                toast.fail({
+                                    title:"没有数据了",
+                                    duration:2000
+                                });
+                                return
+                            }
+                            if(app.page==0){
+                                app.items = data.data
+                            }else{
+                                app.items = app.items.concat(data.data)
+                            }
+
                         }, fail: function (header, status, errorThrown) {
                             //fail body
                             console.log(header)
