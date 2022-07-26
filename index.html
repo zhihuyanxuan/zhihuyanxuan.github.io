@@ -210,6 +210,10 @@
                 app.showContent = true
                 this.content = it.content.replace(/\n/g,'<div class="line"></div>')
             },
+            next:function (){
+                this.page++
+                this.getsearch()
+            }
 
 
         }
