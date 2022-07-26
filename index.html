@@ -23,6 +23,18 @@
     .line{
         height: 1.88em;
     }
+    .main{
+        position: fixed;
+        width: 3rem;
+        height: 3rem;
+        line-height: 3rem;
+        border-radius: 50%;
+        right: 0;
+        bottom: 0.75rem;
+        color: #212121;
+        background-color: #e0e0e0;
+        z-index: 999;
+    }
     [v-cloak] { display: none; }
     </style>
 </head>
@@ -56,6 +68,8 @@
 
         </div>
 
+        <div class="main" v-if="showContent" @click="showContent=false">返回</div>
+
 
     </div>
 
@@ -63,8 +77,21 @@
 <script type="text/javascript" src="./script/vue.js" ></script>
 <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 <script type="text/javascript" src="./script/aui-toast.js" ></script>
+<script type="text/javascript" src="./script/aui-scroll.js"></script>
 <script type="text/javascript">
     var toast = new auiToast();
+
+    var scroll = new auiScroll({
+        listen:true,
+        distance:200 //判断到达底部的距离，isToBottom为true
+    },function(ret){
+        if(ret.isToBottom){
+            document.getElementById("demo").textContent = "已到达底部";
+        }else{
+            document.getElementById("demo").textContent = "滚动高度："+ret.scrollTop;
+        }
+
+    });
 
     app = new Vue({
         el: '#app',
