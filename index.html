@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>盐选</title>
     <link rel="stylesheet" type="text/css" href="./css/aui.css" />
     <style type="text/css">
@@ -132,7 +131,7 @@
                     duration:2000
                 },function(ret){
                     $.ajax({
-                        "url": "http://112.126.77.155:5000/yanxuan",
+                        "url": "https://a6103244925466-dev.apicloud-saas.com/api/yanxuans/getlist",
                         "cache": false,
                         "data": {name: keywords,page:0},
                         "type": "post"
