@@ -1,0 +1,166 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>盐选</title>
+    <link rel="stylesheet" type="text/css" href="./css/aui.css" />
+    <style type="text/css">
+    .aui-content-padded {
+        padding: 0.75rem;
+        background-color: #ffffff;
+        margin-top: 0.75rem;
+    }
+    .content{
+        padding: 0 20px;
+        color: #646464;
+        font-size: 1em;
+        line-height: 1.68em;
+        background-color: #FFF;
+        letter-spacing: 0.01em;
+    }
+    .line{
+        height: 1.88em;
+    }
+    [v-cloak] { display: none; }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <div class="aui-searchbar" id="search" v-if="!showContent">
+            <div class="aui-searchbar-input aui-border-radius">
+                <i class="aui-iconfont aui-icon-search"></i>
+                <input type="search" placeholder="请输入搜索内容" id="search-input">
+                <div class="aui-searchbar-clear-btn">
+                    <i class="aui-iconfont aui-icon-close"></i>
+                </div>
+            </div>
+            <div class="aui-searchbar-btn" tapmode>取消</div>
+        </div>
+        <section class="aui-content-padded" v-for="it in items" v-if="!showContent" @click="getInfo(it)">
+            <div class="aui-card-list">
+                <div class="aui-card-list-header">
+                    {{it.name}} 作者：{{it.author}}
+                </div>
+                <div class="aui-card-list-content-padded">
+                    {{it.content.substr(0,100)}}...
+                </div>
+                <div class="aui-card-list-footer">
+                    {{it.url}}
+                </div>
+            </div>
+        </section>
+
+        <div v-if="showContent" class="content" v-html="content">
+
+        </div>
+
+
+    </div>
+
+</body>
+<script type="text/javascript" src="./script/vue.js" ></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+<script type="text/javascript" src="./script/aui-toast.js" ></script>
+<script type="text/javascript">
+    var toast = new auiToast();
+
+    app = new Vue({
+        el: '#app',
+        data: {
+            items: [],
+            content:"",
+            showContent:false
+        },
+        watch: {
+
+        },
+        filters: {
+            username: function (value) {
+                if (!value) {
+                    return '用户' + vm.userid.substr(-4)
+                }
+                return value
+            }
+        },
+        mounted: function () {
+            var searchBar = document.querySelector(".aui-searchbar");
+            var searchBarInput = document.querySelector(".aui-searchbar input");
+            var searchBarBtn = document.querySelector(".aui-searchbar .aui-searchbar-btn");
+            var searchBarClearBtn = document.querySelector(".aui-searchbar .aui-searchbar-clear-btn");
+            if(searchBar){
+                searchBarInput.onclick = function(){
+                    searchBarBtn.style.marginRight = 0;
+                }
+                searchBarInput.oninput = function(){
+                    if(this.value.length){
+                        searchBarClearBtn.style.display = 'block';
+                        searchBarBtn.classList.add("aui-text-info");
+                        searchBarBtn.textContent = "搜索";
+                    }else{
+                        searchBarClearBtn.style.display = 'none';
+                        searchBarBtn.classList.remove("aui-text-info");
+                        searchBarBtn.textContent = "取消";
+                    }
+                }
+            }
+            searchBarClearBtn.onclick = function(){
+                this.style.display = 'none';
+                searchBarInput.value = '';
+                searchBarBtn.classList.remove("aui-text-info");
+                searchBarBtn.textContent = "取消";
+            }
+            searchBarBtn.onclick = function(){
+                var keywords = searchBarInput.value;
+                if(keywords.length){
+                    searchBarInput.blur();
+                    app.getsearch(keywords)
+                    //document.getElementById("search-keywords").textContent = keywords;
+                }else{
+                    this.style.marginRight = "-"+this.offsetWidth+"px";
+                    searchBarInput.value = '';
+                    searchBarInput.blur();
+                }
+            }
+        },
+        methods: {
+            getsearch: function (keywords) {
+                toast.loading({
+                    title:"加载中",
+                    duration:2000
+                },function(ret){
+                    $.ajax({
+                        "url": "http://112.126.77.155:5000/yanxuan",
+                        "cache": false,
+                        "data": {name: keywords,page:0},
+                        "type": "post"
+                        , success: function (data, status, header) {
+                            //success body
+                            toast.hide();
+                            app.items = data.data
+                        }, fail: function (header, status, errorThrown) {
+                            //fail body
+                            console.log(header)
+                            toast.fail({
+                                title:"网络错误，请稍后再试",
+                                duration:2000
+                            });
+                            toast.hide();
+                        }
+                    })
+                });
+            },
+            getInfo:function (it) {
+                console.log(it)
+                app.showContent = true
+                this.content = it.content.replace(/\n/g,'<div class="line"></div>')
+            }
+
+        }
+    })
+
+
+
+</script>
+</html>
